@@ -1,27 +1,24 @@
 <script setup>
 import axios from 'axios';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
+const router = useRouter()
 const route = useRoute();
+
 const getWeatherData = async () => {
   try {
     const accessKey = '2270a39d-a82c-4bf0-a889-ab2c31fc2320';
     const headers = {'X-Yandex-Weather-Key': accessKey};
     const response = await axios.get(`https://api.weather.yandex.ru/v2/forecast?lat=${route.query.lat}&lon=${route.query.lng}`, {headers})
-    
-    // const fact = weatherData.data.fact;
-
-    // const currentTime = new Date(fact.obs_time * 1000)
-    // console.log(currentTime)
 
     const hourlyWithTime = response.data.forecasts[0].hours.map((hour) => ({
       ...hour,
       currentTime: new Date(hour.hour_ts * 1000)
     }));
 
-    const forecasts = response.data.forecasts.map(forecast => ({
+    const forecasts = response.data.forecasts.map((forecast) => ({
       ...forecast,
-      date: new Date(forecast.date) // Преобразование даты
+      date: new Date(forecast.date) 
     }));
 
     return {
@@ -37,6 +34,16 @@ const getWeatherData = async () => {
 };
 const weatherData = await getWeatherData();
 console.log(weatherData)
+
+
+const removeCity = () => {
+  const cities = JSON.parse(localStorage.getItem("savedCities"));
+  const updatedCities = cities.filter((city) => city.id !== route.query.id);
+  localStorage.setItem('savedCities', JSON.stringify(updatedCities));
+  router.push({
+    name: 'home'
+  })
+}
 </script>
 
 <template>
@@ -127,10 +134,15 @@ console.log(weatherData)
           />
           <div class="flex gap-2 flex-1 justify-end">
             <p>H: {{ Math.round(day.parts.day.temp_max) }}</p>
-            <p>L: {{ Math.round(day.parts.night.temp_min) }}</p>
+            <p>L: {{ Math.round(day.parts.day.temp_min) }}</p>
           </div>
           </div>
         </div>
+       </div>
+
+       <div class="flex items-center gap-2 py-12 text-white cursor-pointer duration-150 hover:text-red-500" @click="removeCity">
+        <i class="fa-solid fa-trash"></i>
+        <p>Remove city</p>
        </div>
   </div>
 </template>

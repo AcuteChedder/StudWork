@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import CityList from '@/components/CityList.vue';
 
 const searchQuery = ref("")
 const queryTimeout = ref(null)
@@ -57,6 +58,14 @@ const previewCity = (searchResult) => {
           <li @click="previewCity(searchResult)" v-for="searchResult in mapboxSearchResults" :key="searchResult.id" class="py-2 cursor-pointer">{{ searchResult.place_name }}</li>
         </div>
       </ul>
+    </div>
+    <div class="flex flex-col gap-4">
+      <Suspense>
+        <CityList />
+        <template #fallback>
+          <p>loading...</p>
+        </template>
+      </Suspense>
     </div>
   </main>
 </template>
