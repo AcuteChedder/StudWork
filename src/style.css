@@ -5,5 +5,8 @@
     --color-primary: #00668A;
     --color-secondary: #004E71;
     --font-roboto: "Roboto", sans-serif;
+}
 
+body {
+    background-color: #242424;
 }
